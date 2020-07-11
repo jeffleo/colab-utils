@@ -2,15 +2,13 @@
 # Download and initalize an up-to-date conda python 3.6 environment
 
 # remove default python path
-echo    "before this script run:\
-        %env PYTHONPATH=\
-        !echo $PYTHONPATH"
+# echo    "before this script run:\
+#         %env PYTHONPATH=\
+#         !echo $PYTHONPATH"
 
 # add conda python packages to sys.path
-echo "after this script run:\
-import sys\
- _ = (sys.path.append("/usr/local/lib/python3.6/site-packages"))\
-# !ls /usr/local/lib/python3.6/dist-packages"
+# echo "after this script run:\
+# # !ls /usr/local/lib/python3.6/dist-packages"
 
 set +xe
 
