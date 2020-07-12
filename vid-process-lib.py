@@ -19,6 +19,13 @@ def purge_images(dir):
     if re.search('.*?\.jpg', f):
       os.remove(os.path.join(dir, f))
 
+def duplicate_frames(source_path: Path, count):
+    inframes_folder = inframes_root / (source_path.stem)
+    inframes_folder.mkdir(parents=True, exist_ok=True)
+    purge_images(inframes_folder)
+    for i in range(0,count):
+        shutil.copyfile(source_path, str(inframes_folder) + '/%5d.jpg'%(i))
+
 def extract_raw_frames(source_path: Path):
     inframes_folder = inframes_root / (source_path.stem)
     inframe_path_template = str(inframes_folder / '%5d.jpg')
@@ -27,7 +34,8 @@ def extract_raw_frames(source_path: Path):
     ffmpeg.input(str(source_path)).output(
         str(inframe_path_template), format='image2', vcodec='mjpeg', qscale=0
     ).run(capture_stdout=True)
-    print("extracted video frames to " + str(inframes_folder))
+    NUM_FRAMES = len([name for name in os.listdir(inframes_folder) if os.path.isfile(name)])
+    print("Extracted {} video frames to {}".format(NUM_FRAMES,str(inframes_folder)))
 
 def get_fps(source_path: Path) -> str:
     print(source_path)
@@ -98,32 +106,37 @@ def vid_format_validate(vid_path : Path) -> Path:
     ret = 0
     # change containers, copy A/V and timestamps
     if ".flv" in vid_path.name:
-        ret = os.system(
-        'ffmpeg -i "'
-        + str(vid_path)
-        + '" -c copy -copyts "'
-        + str(vid_path.replace('.flv','.mp4'))
-        + '"'
-        )
         new_path = str(vid_path.replace('.flv','.mp4'))
+        if os.path.isfile(new_path) == False:
+            ret = os.system(
+            'ffmpeg -i "'
+            + str(vid_path)
+            + '" -c copy -copyts "'
+            + str(vid_path.replace('.flv','.mp4'))
+            + '"'
+            )
+        
     elif ".avi" in vid_path.name:
-        ret = os.system(
-        'ffmpeg -i "'
-        + str(vid_path)
-        + '" -c copy -copyts "'
-        + str(vid_path.replace('.avi','.mp4'))
-        + '"'
-        )
         new_path = str(vid_path.replace('.avi','.mp4'))
+        if os.path.isfile(new_path) == False:
+            ret = os.system(
+            'ffmpeg -i "'
+            + str(vid_path)
+            + '" -c copy -copyts "'
+            + str(vid_path.replace('.avi','.mp4'))
+            + '"'
+            )
     
-    if ".mp4" != new_path.name or ret != 0:
+    if ".mp4" not in new_path.name or ret != 0:
         raise Exception("Input video not mp4 or can't be converted to mp4")
     return new_path
 
 
 ''' split vid into sections, based on image sz and duration '''
-def vid_split_by_size(vid_path : Path):
-    print("TODO")
+def vid_split_by_size(vid_path : Path) -> list:
+    vid_path_list = []
+    vid_path_list.append(vid_path)
+    '''TODO'''
     # Get video details
     # build -ss -t commands
     # run list of commands, append vid_path with index as first 3 chars
@@ -131,4 +144,5 @@ def vid_split_by_size(vid_path : Path):
         # ideally save like 1 | path | done/not done for checkpointing
 
     #  ffmpeg -ss 00:00:30.00 -i .mp4 -t 00:00:10.00 -c:v copy -c:a copy .mp4
-    return vid_path
+    return vid_path_list
+
