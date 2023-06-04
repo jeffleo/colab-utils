@@ -1,3 +1,6 @@
+# use cases: like EDVR / DeOldify / DAIN? 
+# TODO:
+# video segmenting based on dur and resolution
 import ffmpeg
 import os
 from pathlib import Path
