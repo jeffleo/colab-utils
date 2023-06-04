@@ -1,7 +1,5 @@
 # vid-process-lib
-Generic tools for video inference like EDVR / DeOldify / DAIN? 
-TODO:
-video segmenting based on dur and resolution
+Generic tools for video inference
 
 # tf-utils
 GDrive-Based model checkpointing from within Google's Colab service.
